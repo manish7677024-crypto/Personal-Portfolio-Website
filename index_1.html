@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alex Rivera — Full Stack Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Reset & Tokens ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #0A0F1E;
+      --slate:      #111827;
+      --slate2:     #1A2035;
+      --cyan:       #00D4FF;
+      --cyan-dim:   rgba(0,212,255,0.12);
+      --cyan-glow:  rgba(0,212,255,0.35);
+      --white:      #E8EDF5;
+      --gray:       #8892A4;
+      --gray2:      #4A5568;
+      --green:      #00FF88;
+
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body:    'Inter', sans-serif;
+      --font-mono:    'JetBrains Mono', monospace;
+
+      --radius: 12px;
+      --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--navy);
+      color: var(--white);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    ::selection { background: var(--cyan); color: var(--navy); }
+
+    /* ── Grid Overlay ───────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Scrollbar ──────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--slate); }
+    ::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 2px; }
+
+    /* ── Nav ────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(10,15,30,0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,212,255,0.08);
+      transition: var(--transition);
+    }
+
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      color: var(--cyan);
+      letter-spacing: -0.5px;
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--white); }
+
+    .nav-links {
+      display: flex; gap: 36px; list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--gray);
+      text-decoration: none;
+      letter-spacing: 0.3px;
+      transition: color var(--transition);
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: -4px; left: 0; right: 0;
+      height: 1px; background: var(--cyan);
+      transform: scaleX(0); transform-origin: right;
+      transition: transform var(--transition);
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+    .nav-cta {
+      font-family: var(--font-display);
+      font-size: 13px; font-weight: 600;
+      color: var(--cyan) !important;
+      border: 1px solid var(--cyan);
+      padding: 8px 20px;
+      border-radius: 6px;
+      transition: background var(--transition), color var(--transition) !important;
+    }
+    .nav-cta:hover { background: var(--cyan) !important; color: var(--navy) !important; }
+    .nav-cta::after { display: none !important; }
+
+    /* ── Hero ───────────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 120px 48px 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-inner { max-width: 900px; }
+
+    .hero-label {
+      font-family: var(--font-mono);
+      font-size: 13px; color: var(--cyan);
+      letter-spacing: 2px;
+      margin-bottom: 28px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .hero-label::before {
+      content: '';
+      display: block; width: 32px; height: 1px;
+      background: var(--cyan);
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(48px, 7vw, 88px);
+      font-weight: 700;
+      line-height: 1.0;
+      letter-spacing: -2px;
+      margin-bottom: 12px;
+    }
+    .hero-title .line2 { color: var(--gray); font-weight: 300; }
+    .hero-title .accent { color: var(--cyan); }
+
+    /* Terminal block — the signature element */
+    .terminal {
+      margin: 40px 0 48px;
+      background: var(--slate);
+      border: 1px solid rgba(0,212,255,0.15);
+      border-radius: var(--radius);
+      overflow: hidden;
+      max-width: 560px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,212,255,0.05);
+    }
+    .terminal-bar {
+      background: var(--slate2);
+      padding: 12px 16px;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #FF5F57; }
+    .dot-y { background: #FFBD2E; }
+    .dot-g { background: #28CA41; }
+    .terminal-title {
+      font-family: var(--font-mono);
+      font-size: 11px; color: var(--gray);
+      margin-left: 8px;
+    }
+    .terminal-body {
+      padding: 20px 24px;
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.9;
+    }
+    .t-prompt { color: var(--cyan); }
+    .t-cmd { color: var(--white); }
+    .t-out { color: var(--gray); }
+    .t-green { color: var(--green); }
+    .t-cursor {
+      display: inline-block;
+      width: 9px; height: 16px;
+      background: var(--cyan);
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    .hero-actions {
+      display: flex; gap: 16px; flex-wrap: wrap;
+    }
+    .btn {
+      font-family: var(--font-display);
+      font-size: 14px; font-weight: 600;
+      padding: 14px 28px;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: var(--transition);
+      cursor: pointer; border: none;
+    }
+    .btn-primary {
+      background: var(--cyan);
+      color: var(--navy);
+    }
+    .btn-primary:hover {
+      background: #33DEFF;
+      box-shadow: 0 0 32px var(--cyan-glow);
+      transform: translateY(-2px);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border: 1px solid var(--gray2);
+    }
+    .btn-outline:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      transform: translateY(-2px);
+    }
+
+    /* Floating blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none; z-index: -1;
+    }
+    .blob-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+      top: -100px; right: -100px;
+    }
+    .blob-2 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(0,255,136,0.05) 0%, transparent 70%);
+      bottom: 100px; left: 60%;
+    }
+
+    /* ── Section Shared ─────────────────────────────────────────── */
+    section {
+      padding: 100px 48px;
+      position: relative; z-index: 1;
+    }
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 12px; color: var(--cyan);
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-bottom: 48px;
+      color: var(--white);
+    }
+    .section-title span { color: var(--cyan); }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* ── About ──────────────────────────────────────────────────── */
+    #about { background: var(--slate); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    .about-text p {
+      color: var(--gray);
+      font-size: 16px;
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+    .about-text p strong { color: var(--white); font-weight: 500; }
+    .stats-row {
+      display: flex; gap: 40px;
+      margin-top: 40px;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 36px; font-weight: 700;
+      color: var(--cyan);
+    }
+    .stat-label { font-size: 13px; color: var(--gray); margin-top: 2px; }
+
+    .skills-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .skill-chip {
+      background: var(--slate2);
+      border: 1px solid rgba(0,212,255,0.1);
+      border-radius: 8px;
+      padding: 14px 18px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 500;
+      transition: border-color var(--transition), background var(--transition);
+    }
+    .skill-chip:hover { border-color: var(--cyan); background: var(--cyan-dim); }
+    .skill-icon { font-size: 20px; }
+
+    /* ── Projects ───────────────────────────────────────────────── */
+    #projects { background: var(--navy); }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .project-card {
+      background: var(--slate);
+      border: 1px solid rgba(0,212,255,0.08);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+      position: relative;
+    }
+    .project-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(0,212,255,0.3);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,212,255,0.1);
+    }
+    .project-card.featured {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .project-thumb {
+      aspect-ratio: 16/9;
+      background: var(--slate2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 64px;
+      position: relative; overflow: hidden;
+    }
+    .project-card.featured .project-thumb {
+      aspect-ratio: unset; min-height: 260px;
+    }
+    .project-thumb::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--cyan-dim), transparent);
+    }
+    .project-body { padding: 24px; }
+    .project-tag {
+      font-family: var(--font-mono);
+      font-size: 11px; color: var(--cyan);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .project-name {
+      font-family: var(--font-display);
+      font-size: 20px; font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: -0.3px;
+    }
+    .project-desc { font-size: 14px; color: var(--gray); line-height: 1.7; margin-bottom: 20px; }
+    .project-stack {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-bottom: 24px;
+    }
+    .stack-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--slate2);
+      color: var(--gray);
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .project-links { display: flex; gap: 12px; }
+    .project-link {
+      font-size: 13px; font-weight: 500;
+      color: var(--cyan);
+      text-decoration: none;
+      display: flex; align-items: center; gap: 6px;
+      transition: opacity var(--transition);
+    }
+    .project-link:hover { opacity: 0.7; }
+    .project-link.secondary { color: var(--gray); }
+
+    /* ── Experience ─────────────────────────────────────────────── */
+    #experience { background: var(--slate); }
+    .timeline { position: relative; max-width: 700px; }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 0; top: 8px; bottom: 0;
+      width: 1px; background: rgba(0,212,255,0.15);
+    }
+    .timeline-item {
+      padding-left: 36px;
+      padding-bottom: 48px;
+      position: relative;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute; left: -4px; top: 8px;
+      width: 9px; height: 9px;
+      background: var(--cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px var(--slate), 0 0 0 4px rgba(0,212,255,0.3);
+    }
+    .tl-date {
+      font-family: var(--font-mono);
+      font-size: 12px; color: var(--cyan);
+      letter-spacing: 1px; margin-bottom: 8px;
+    }
+    .tl-role {
+      font-family: var(--font-display);
+      font-size: 20px; font-weight: 700;
+      letter-spacing: -0.3px; margin-bottom: 4px;
+    }
+    .tl-company { font-size: 14px; color: var(--gray); margin-bottom: 16px; }
+    .tl-desc { font-size: 14px; color: var(--gray); line-height: 1.7; }
+    .tl-desc li { margin-bottom: 6px; padding-left: 16px; position: relative; }
+    .tl-desc li::before {
+      content: '▹';
+      position: absolute; left: 0; color: var(--cyan);
+    }
+
+    /* ── Contact ────────────────────────────────────────────────── */
+    #contact { background: var(--navy); }
+    .contact-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start;
+    }
+    .contact-info h3 {
+      font-family: var(--font-display);
+      font-size: 24px; font-weight: 700;
+      margin-bottom: 16px; letter-spacing: -0.5px;
+    }
+    .contact-info p { font-size: 15px; color: var(--gray); line-height: 1.7; }
+    .social-links {
+      display: flex; flex-direction: column; gap: 12px;
+      margin-top: 32px;
+    }
+    .social-link {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 14px; color: var(--gray);
+      text-decoration: none;
+      transition: color var(--transition);
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: border-color var(--transition), color var(--transition);
+    }
+    .social-link:hover { color: var(--cyan); border-color: rgba(0,212,255,0.2); }
+    .social-icon { font-size: 18px; }
+
+    /* Contact form */
+    .contact-form { display: flex; flex-direction: column; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label {
+      font-family: var(--font-mono);
+      font-size: 12px; color: var(--gray); letter-spacing: 1px;
+    }
+    .form-group input,
+    .form-group textarea {
+      background: var(--slate);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 14px;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      outline: none;
+      resize: vertical;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px var(--cyan-dim);
+    }
+    .form-group textarea { min-height: 130px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-msg {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      display: none;
+    }
+    .form-msg.success { display: block; background: rgba(0,255,136,0.1); color: var(--green); border: 1px solid rgba(0,255,136,0.2); }
+
+    /* ── Footer ─────────────────────────────────────────────────── */
+    footer {
+      background: var(--slate);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 32px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: relative; z-index: 1;
+    }
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 12px; color: var(--gray);
+    }
+    .footer-copy span { color: var(--cyan); }
+    .back-top {
+      font-family: var(--font-mono);
+      font-size: 12px; color: var(--gray);
+      text-decoration: none;
+      border: 1px solid var(--gray2);
+      padding: 8px 14px; border-radius: 6px;
+      transition: border-color var(--transition), color var(--transition);
+    }
+    .back-top:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    /* ── Animations ─────────────────────────────────────────────── */
+    .fade-in {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Mobile ─────────────────────────────────────────────────── */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 4px;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--white); border-radius: 2px;
+      transition: var(--transition);
+    }
+    .mobile-menu {
+      display: none; flex-direction: column;
+      background: var(--slate);
+      padding: 24px 48px;
+      border-bottom: 1px solid rgba(0,212,255,0.08);
+      gap: 16px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-family: var(--font-display); font-size: 16px; color: var(--gray); text-decoration: none; }
+    .mobile-menu a:hover { color: var(--white); }
+
+    @media (max-width: 900px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      #hero { padding: 100px 24px 60px; }
+      section { padding: 72px 24px; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .project-card.featured { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+      footer { flex-direction: column; gap: 16px; text-align: center; padding: 24px; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fade-in { opacity: 1; transform: none; }
+      .t-cursor { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Nav ─────────────────────────────────────────────────────── -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo">alex<span>.dev</span></a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#contact" class="nav-cta">Contact</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#about" class="mobile-link">About</a>
+    <a href="#projects" class="mobile-link">Projects</a>
+    <a href="#experience" class="mobile-link">Experience</a>
+    <a href="#contact" class="mobile-link">Contact</a>
+  </div>
+
+  <!-- ── Hero ────────────────────────────────────────────────────── -->
+  <section id="hero">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="hero-inner">
+      <div class="hero-label">Full Stack Developer</div>
+      <h1 class="hero-title">
+        Alex Rivera<br>
+        <span class="line2">builds things for the <span class="accent">web.</span></span>
+      </h1>
+
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+          <span class="terminal-title">alex@portfolio ~ zsh</span>
+        </div>
+        <div class="terminal-body" id="terminalBody">
+          <!-- typed by JS -->
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a href="#projects" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          View Projects
+        </a>
+        <a href="#contact" class="btn btn-outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Say Hello
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── About ───────────────────────────────────────────────────── -->
+  <section id="about">
+    <div class="container">
+      <div class="section-label">01 — About</div>
+      <h2 class="section-title">Who I <span>am</span></h2>
+      <div class="about-grid">
+        <div class="about-text fade-in">
+          <p>Hi! I'm Alex — a <strong>full stack developer</strong> with 4+ years of experience building scalable web applications from the ground up. I love the entire lifecycle: from sketching ideas to shipping production code.</p>
+          <p>My stack lives at the intersection of <strong>React.js, Node.js, and cloud infrastructure</strong>. I care deeply about performance, clean architecture, and developer experience.</p>
+          <p>When I'm not writing code, I'm contributing to open source, writing technical blog posts, or exploring the latest in AI tooling.</p>
+          <div class="stats-row">
+            <div>
+              <div class="stat-num">40+</div>
+              <div class="stat-label">Projects shipped</div>
+            </div>
+            <div>
+              <div class="stat-num">4 yrs</div>
+              <div class="stat-label">Professional exp.</div>
+            </div>
+            <div>
+              <div class="stat-num">12k+</div>
+              <div class="stat-label">GitHub commits</div>
+            </div>
+          </div>
+        </div>
+        <div class="skills-grid fade-in">
+          <div class="skill-chip"><span class="skill-icon">⚛️</span> React.js</div>
+          <div class="skill-chip"><span class="skill-icon">🟩</span> Node.js</div>
+          <div class="skill-chip"><span class="skill-icon">🐍</span> Python</div>
+          <div class="skill-chip"><span class="skill-icon">🐘</span> PostgreSQL</div>
+          <div class="skill-chip"><span class="skill-icon">🍃</span> MongoDB</div>
+          <div class="skill-chip"><span class="skill-icon">☁️</span> AWS / GCP</div>
+          <div class="skill-chip"><span class="skill-icon">🐳</span> Docker</div>
+          <div class="skill-chip"><span class="skill-icon">⚡</span> TypeScript</div>
+          <div class="skill-chip"><span class="skill-icon">🎨</span> Tailwind CSS</div>
+          <div class="skill-chip"><span class="skill-icon">🔁</span> CI/CD Pipelines</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Projects ─────────────────────────────────────────────────── -->
+  <section id="projects">
+    <div class="container">
+      <div class="section-label">02 — Work</div>
+      <h2 class="section-title">Featured <span>Projects</span></h2>
+      <div class="projects-grid">
+
+        <!-- Featured -->
+        <div class="project-card featured fade-in">
+          <div class="project-thumb" style="background: linear-gradient(135deg,#0D1F3C,#1A3A5C); font-size:80px;">🛒</div>
+          <div class="project-body">
+            <div class="project-tag">★ Featured Project</div>
+            <div class="project-name">ShopSphere — E-Commerce Platform</div>
+            <p class="project-desc">A full-featured e-commerce platform with real-time inventory, Stripe payments, admin dashboard, and a recommendation engine powered by collaborative filtering. Handles 10k+ concurrent users.</p>
+            <div class="project-stack">
+              <span class="stack-tag">React</span>
+              <span class="stack-tag">Node.js</span>
+              <span class="stack-tag">PostgreSQL</span>
+              <span class="stack-tag">Redis</span>
+              <span class="stack-tag">Stripe</span>
+              <span class="stack-tag">AWS S3</span>
+            </div>
+            <div class="project-links">
+              <a href="#" class="project-link">↗ Live Demo</a>
+              <a href="#" class="project-link secondary">⎇ GitHub</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card fade-in">
+          <div class="project-thumb" style="background: linear-gradient(135deg,#0F2027,#1B3A4B);">📊</div>
+          <div class="project-body">
+            <div class="project-tag">Data Visualization</div>
+            <div class="project-name">DataPulse Dashboard</div>
+            <p class="project-desc">Real-time analytics dashboard with WebSocket data streams, customizable widgets, and export to PDF/CSV.</p>
+            <div class="project-stack">
+              <span class="stack-tag">React</span>
+              <span class="stack-tag">D3.js</span>
+              <span class="stack-tag">Flask</span>
+              <span class="stack-tag">MongoDB</span>
+            </div>
+            <div class="project-links">
+              <a href="#" class="project-link">↗ Live Demo</a>
+              <a href="#" class="project-link secondary">⎇ GitHub</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card fade-in">
+          <div class="project-thumb" style="background: linear-gradient(135deg,#0A1628,#12284A);">💬</div>
+          <div class="project-body">
+            <div class="project-tag">Real-Time App</div>
+            <div class="project-name">Nexus — Team Chat</div>
+            <p class="project-desc">Slack-like team chat with channels, DMs, file sharing, and threaded replies. End-to-end encrypted.</p>
+            <div class="project-stack">
+              <span class="stack-tag">Next.js</span>
+              <span class="stack-tag">Socket.io</span>
+              <span class="stack-tag">PostgreSQL</span>
+            </div>
+            <div class="project-links">
+              <a href="#" class="project-link">↗ Live Demo</a>
+              <a href="#" class="project-link secondary">⎇ GitHub</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card fade-in">
+          <div class="project-thumb" style="background: linear-gradient(135deg,#0C1A0C,#1A3A1A);">🌱</div>
+          <div class="project-body">
+            <div class="project-tag">CLI Tool</div>
+            <div class="project-name">GreenDeploy CLI</div>
+            <p class="project-desc">A developer CLI to estimate and offset carbon footprint of cloud deployments. 1.2k GitHub stars.</p>
+            <div class="project-stack">
+              <span class="stack-tag">Python</span>
+              <span class="stack-tag">Click</span>
+              <span class="stack-tag">GCP API</span>
+            </div>
+            <div class="project-links">
+              <a href="#" class="project-link">↗ PyPI</a>
+              <a href="#" class="project-link secondary">⎇ GitHub</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Experience ───────────────────────────────────────────────── -->
+  <section id="experience">
+    <div class="container">
+      <div class="section-label">03 — Journey</div>
+      <h2 class="section-title">Work <span>Experience</span></h2>
+      <div class="timeline">
+
+        <div class="timeline-item fade-in">
+          <div class="tl-date">2023 — Present</div>
+          <div class="tl-role">Senior Full Stack Engineer</div>
+          <div class="tl-company">FinEdge Technologies · San Francisco, CA (Remote)</div>
+          <ul class="tl-desc">
+            <li>Led migration from monolith to microservices, reducing P99 latency by 40%.</li>
+            <li>Built a real-time fraud detection dashboard serving 500k+ daily active users.</li>
+            <li>Mentored a team of 4 junior engineers; introduced weekly architecture review sessions.</li>
+          </ul>
+        </div>
+
+        <div class="timeline-item fade-in">
+          <div class="tl-date">2021 — 2023</div>
+          <div class="tl-role">Full Stack Developer</div>
+          <div class="tl-company">Nexora Labs · New York, NY</div>
+          <ul class="tl-desc">
+            <li>Designed and shipped 12 product features across a React + Express.js SaaS product.</li>
+            <li>Optimized PostgreSQL query performance, cutting report generation time from 8s to 0.6s.</li>
+            <li>Implemented CI/CD pipelines using GitHub Actions + AWS ECS.</li>
+          </ul>
+        </div>
+
+        <div class="timeline-item fade-in">
+          <div class="tl-date">2020 — 2021</div>
+          <div class="tl-role">Junior Web Developer</div>
+          <div class="tl-company">Pixel & Pine Studio · Austin, TX</div>
+          <ul class="tl-desc">
+            <li>Built client websites and landing pages using React, Next.js, and Tailwind CSS.</li>
+            <li>Integrated third-party APIs (Stripe, Twilio, Google Maps) into client projects.</li>
+          </ul>
+        </div>
+
+        <div class="timeline-item fade-in">
+          <div class="tl-date">2020</div>
+          <div class="tl-role">B.S. Computer Science</div>
+          <div class="tl-company">University of Texas at Austin · GPA 3.8</div>
+          <ul class="tl-desc">
+            <li>Specialization in Software Engineering and Distributed Systems.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Contact ──────────────────────────────────────────────────── -->
+  <section id="contact">
+    <div class="container">
+      <div class="section-label">04 — Connect</div>
+      <h2 class="section-title">Get In <span>Touch</span></h2>
+      <div class="contact-grid">
+
+        <div class="contact-info fade-in">
+          <h3>Let's build something great together.</h3>
+          <p>I'm open to full-time roles, freelance projects, and interesting collaborations. If you have an idea or an opportunity, my inbox is always open.</p>
+          <div class="social-links">
+            <a href="mailto:alex@example.com" class="social-link">
+              <span class="social-icon">✉️</span>
+              alex@example.com
+            </a>
+            <a href="https://github.com" target="_blank" class="social-link">
+              <span class="social-icon">⎇</span>
+              github.com/alexrivera
+            </a>
+            <a href="https://linkedin.com" target="_blank" class="social-link">
+              <span class="social-icon">💼</span>
+              linkedin.com/in/alexrivera
+            </a>
+            <a href="https://twitter.com" target="_blank" class="social-link">
+              <span class="social-icon">𝕏</span>
+              @alexrivera_dev
+            </a>
+          </div>
+        </div>
+
+        <form class="contact-form fade-in" id="contactForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>NAME</label>
+              <input type="text" placeholder="Jane Smith" required />
+            </div>
+            <div class="form-group">
+              <label>EMAIL</label>
+              <input type="email" placeholder="jane@company.com" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>SUBJECT</label>
+            <input type="text" placeholder="Freelance project / Job opportunity" />
+          </div>
+          <div class="form-group">
+            <label>MESSAGE</label>
+            <textarea placeholder="Tell me about your project..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="align-self:flex-start;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Send Message
+          </button>
+          <div class="form-msg success" id="formSuccess">✓ Message sent! I'll get back to you within 24 hours.</div>
+        </form>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ───────────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-copy">Designed & built by <span>Alex Rivera</span> · 2024</div>
+    <a href="#hero" class="back-top">↑ Back to top</a>
+  </footer>
+
+  <!-- ── JavaScript ───────────────────────────────────────────────── -->
+  <script>
+    // Terminal typer
+    const lines = [
+      { text: '$ whoami', cls: 't-prompt', delay: 0 },
+      { text: 'alex_rivera — full-stack developer', cls: 't-out', delay: 600 },
+      { text: '$ cat skills.json | jq ".top"', cls: 't-prompt', delay: 1300 },
+      { text: '["React", "Node.js", "PostgreSQL", "AWS"]', cls: 't-green', delay: 1900 },
+      { text: '$ echo $STATUS', cls: 't-prompt', delay: 2600 },
+      { text: 'open to new opportunities ✓', cls: 't-out', delay: 3100 },
+    ];
+
+    const body = document.getElementById('terminalBody');
+    let cursor = document.createElement('span');
+    cursor.className = 't-cursor';
+
+    lines.forEach((line, i) => {
+      setTimeout(() => {
+        if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
+        const p = document.createElement('p');
+        p.className = line.cls;
+        p.textContent = line.text;
+        body.appendChild(p);
+        if (i === lines.length - 1) p.appendChild(cursor);
+      }, line.delay);
+    });
+
+    // Scroll fade-in
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, idx) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), idx * 80);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // Mobile menu
+    const ham = document.getElementById('hamburger');
+    const menu = document.getElementById('mobileMenu');
+    ham.addEventListener('click', () => menu.classList.toggle('open'));
+    document.querySelectorAll('.mobile-link').forEach(a => {
+      a.addEventListener('click', () => menu.classList.remove('open'));
+    });
+
+    // Form submit
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('formSuccess');
+      msg.style.display = 'block';
+      e.target.reset();
+      setTimeout(() => msg.style.display = 'none', 6000);
+    });
+
+    // Nav shadow on scroll
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').style.boxShadow =
+        window.scrollY > 20 ? '0 4px 40px rgba(0,0,0,0.4)' : 'none';
+    });
+  </script>
+</body>
+</html>
